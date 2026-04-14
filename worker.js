@@ -13,6 +13,11 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    // 健康检查端点（用于 Cron 触发器预热，不需要鉴权）
+    if (path === '/health' && request.method === 'GET') {
+      return jsonResponse({ status: 'ok', timestamp: new Date().toISOString() });
+    }
+
     // 鉴权检查
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -43,6 +48,19 @@ export default {
     }
 
     return jsonResponse({ error: { message: 'Not found', type: 'invalid_request_error' } }, 404);
+  },
+
+  // Cron Trigger 处理函数 - 用于预热 Worker 防止冷启动
+  async scheduled(event, env, ctx) {
+    // 发送一个简单的健康检查请求到自己，保持 Worker 预热状态
+    // 这不会消耗任何 AI 额度，只是唤醒 Worker
+    const url = 'https://ai.jaden.de5.net/health';
+    try {
+      const response = await fetch(url, { method: 'GET' });
+      console.log(`Warm-up ping completed at ${new Date().toISOString()}, status: ${response.status}`);
+    } catch (error) {
+      console.error(`Warm-up ping failed: ${error.message}`);
+    }
   }
 };
 
