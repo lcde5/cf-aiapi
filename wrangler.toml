@@ -4,6 +4,8 @@
 name = "openai-proxy"
 main = "worker.js"
 compatibility_date = "2024-01-01"
+keep_vars = true
+triggers = { crons = ["*/5 * * * *"] }
 
 # 限制 Workers 运行区域（减少 IP 变化，避免被 AI 厂商风控）
 # 可选区域：WNAM (美西), ENAM (美东), WEUR (西欧), EEUR (东欧), APAC (亚太)
@@ -11,8 +13,14 @@ compatibility_date = "2024-01-01"
 [placement]
 mode = "smart"
 
-# 环境变量配置示例（实际部署时在 Dashboard 或使用 wrangler secret 配置）
-# [vars]
+# Cron 预热会请求 `${WARMUP_BASE_URL}/health`
+# 这里填写你的自定义域名或 workers.dev 地址，例如：
+# WARMUP_BASE_URL = "https://api.example.com"
+# WARMUP_BASE_URL = "https://openai-proxy.<subdomain>.workers.dev"
+[vars]
+WARMUP_BASE_URL = ""
+
+# 其他环境变量可在 Dashboard 中配置，或继续写在 [vars] 里
 # API_KEY = "your-secret-api-key-here"
 # PROVIDERS = '{"deepseek":{"baseURL":"https://api.deepseek.com/v1","apiKey":"DEEPSEEK_API_KEY","models":["deepseek-chat","deepseek-coder"]}}'
 

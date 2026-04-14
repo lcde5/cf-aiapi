@@ -35,6 +35,7 @@
 |--------|------|--------|
 | `API_KEY` | 统一鉴权密钥 | `your-secret-api-key-here` |
 | `PROVIDERS` | 厂商和模型配置（JSON 字符串） | 见下方示例 |
+| `WARMUP_BASE_URL` | Worker 对外访问地址，Cron 预热会请求 `${WARMUP_BASE_URL}/health` | `https://your-worker.workers.dev` |
 
 #### 各厂商 API Key（按需配置）
 
@@ -47,6 +48,16 @@
 | `QWEN_API_KEY` | 通义千问 API 密钥 |
 
 ### 3. PROVIDERS 配置示例
+
+### 预热配置
+
+如果你启用了 `wrangler.toml` 里的 Cron Trigger，定时预热请求会读取 `WARMUP_BASE_URL`，然后访问 `/health`。
+
+- 自定义域名示例：`https://api.example.com`
+- workers.dev 示例：`https://your-worker.your-subdomain.workers.dev`
+- 未配置 `WARMUP_BASE_URL` 时，预热会自动跳过，不会再使用写死域名
+
+`wrangler.toml` 中默认提供了 `triggers = { crons = ["*/5 * * * *"] }`，你可以按需修改 Cron 表达式。
 
 #### 基础配置
 
