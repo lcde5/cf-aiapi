@@ -1,7 +1,7 @@
 # Cloudflare Workers 配置文件
 # 使用 wrangler CLI 部署时的配置
 
-name = "openai-proxy"
+name = "aiapi"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
