@@ -4,6 +4,7 @@ import { handleModels } from "../handlers/models.js";
 import { handleChatCompletions } from "../handlers/chat.js";
 import { handleEmbeddings } from "../handlers/embeddings.js";
 import { handleAnthropicMessages } from "../handlers/anthropic.js";
+import { handleUpstreamDebug } from "../handlers/debug.js";
 
 export async function fetch(request, env) {
   // CORS preflight
@@ -35,6 +36,9 @@ export async function fetch(request, env) {
   }
   if (path === "/v1/messages" && request.method === "POST") {
     return handleAnthropicMessages(request, env);
+  }
+  if (path === "/debug/upstream-test" && request.method === "GET") {
+    return handleUpstreamDebug(request, env);
   }
 
   return jsonResponse({ error: { message: "Not found", type: "invalid_request_error" } }, 404);
